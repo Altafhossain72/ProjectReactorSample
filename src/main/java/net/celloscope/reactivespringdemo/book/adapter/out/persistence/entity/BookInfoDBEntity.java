@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("books")
@@ -12,8 +13,10 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 public class BookInfoDBEntity {
     @Id
+    @Column("bookid")
     private Long bookId;
     private String title;
     private String author;
+    @Column("isbn")
     private String ISBN;
 }

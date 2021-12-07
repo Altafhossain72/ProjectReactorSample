@@ -16,5 +16,4 @@ public class BookInfo {
     private String title;
     private String author;
     private String ISBN;
-    private List<Review> reviews;
 }

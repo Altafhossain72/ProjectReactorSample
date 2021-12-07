@@ -28,10 +28,9 @@ public class ReviewController {
 
 
     @GetMapping("/review/{bookId}")
-    public Flux<ResponseEntity<Review>> getAllReviewByBookId(
+    public Flux<Review> getAllReviewByBookId(
             @PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
         return this.reviewCRUDUseCase.loadReviewByBookId(bookId)
-                .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while loadReviewByBookId :" + throwable);

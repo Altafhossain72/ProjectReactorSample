@@ -42,7 +42,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
     public Mono<BookInfo> saveBookInfo(Mono<SaveBookInfoCommand> command) {
         return bookInfoCRUDPort.saveBookInfo(command)
                 .onErrorMap(throwable -> {
-                    log.error("Exception Occurred while saveBookInfo :" + throwable);
+                    log.error("Exception Occurred while saveBookInfo :" + throwable.getLocalizedMessage());
                     return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
                 }).log();
     }

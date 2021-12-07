@@ -28,12 +28,11 @@ public class BookController {
 
 
     @GetMapping("/all-book")
-    public Flux<ResponseEntity<BookInfo>> getAllBook() {
+    public Flux<BookInfo> getAllBook() {
         return this.bookInfoCRUDUseCase.loadAllBook()
-                .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
-                            log.error("Exception Occurred while loadAllBook :" + throwable);
+                            log.error("Exception Occurred while loadAllBook :" + throwable.getLocalizedMessage());
                             return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
                         }
                 );
@@ -45,44 +44,44 @@ public class BookController {
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
-                            log.error("Exception Occurred while loadBookInfoByBookId :" + throwable);
+                            log.error("Exception Occurred while loadBookInfoByBookId :" + throwable.getLocalizedMessage());
                             return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
                         }
                 );
     }
 
     @PostMapping("/create-book")
-    public Mono<ResponseEntity<BookInfo>> createProduct(@RequestBody Mono<SaveBookInfoCommand> command) {
-        return bookInfoCRUDUseCase.saveBookInfo(command)
+    public Mono<ResponseEntity<BookInfo>> createBook(@RequestBody SaveBookInfoCommand command) {
+        return bookInfoCRUDUseCase.saveBookInfo(Mono.just(command))
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
-                            log.error("Exception Occurred while saveBookInfo :" + throwable);
+                            log.error("Exception Occurred while saveBookInfo :" + throwable.getLocalizedMessage());
                             return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
                         }
                 );
     }
 
     @PutMapping("/update-book/{bookId}")
-    public Mono<ResponseEntity<BookInfo>> updateProduct(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId,
-                                                        @RequestBody Mono<SaveBookInfoCommand> command) {
-        return this.bookInfoCRUDUseCase.updateBookInfo(command, bookId)
+    public Mono<ResponseEntity<BookInfo>> updateBook(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId,
+                                                        @RequestBody SaveBookInfoCommand command) {
+        return this.bookInfoCRUDUseCase.updateBookInfo(Mono.just(command), bookId)
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
-                            log.error("Exception Occurred while updateBookInfo :" + throwable);
+                            log.error("Exception Occurred while updateBookInfo :" + throwable.getLocalizedMessage());
                             return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
                         }
                 );
     }
 
     @DeleteMapping("/delete-book/{bookId}")
-    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
+    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
         return this.bookInfoCRUDUseCase.deleteBookInfo(bookId)
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
-                            log.error("Exception Occurred while deleteBookInfo :" + throwable);
+                            log.error("Exception Occurred while deleteBookInfo :" + throwable.getLocalizedMessage());
                             return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
                         }
                 );
