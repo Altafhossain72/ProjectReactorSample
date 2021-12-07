@@ -51,8 +51,8 @@ public class BookController {
     }
 
     @PostMapping("/create-book")
-    public Mono<ResponseEntity<BookInfo>> createBook(@RequestBody SaveBookInfoCommand command) {
-        return bookInfoCRUDUseCase.saveBookInfo(Mono.just(command))
+    public Mono<ResponseEntity<BookInfo>> createBook(@RequestBody Mono<SaveBookInfoCommand> command) {
+        return bookInfoCRUDUseCase.saveBookInfo(command)
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
@@ -64,8 +64,8 @@ public class BookController {
 
     @PutMapping("/update-book/{bookId}")
     public Mono<ResponseEntity<BookInfo>> updateBook(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId,
-                                                        @RequestBody SaveBookInfoCommand command) {
-        return this.bookInfoCRUDUseCase.updateBookInfo(Mono.just(command), bookId)
+                                                        @RequestBody Mono<SaveBookInfoCommand> command) {
+        return this.bookInfoCRUDUseCase.updateBookInfo(command, bookId)
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
