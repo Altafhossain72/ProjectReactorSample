@@ -8,6 +8,7 @@ class BookInfoPersistenceAdapterTest {
 
     @Test
     void loadBookInfoByBookId() {
+
     }
 
     @Test

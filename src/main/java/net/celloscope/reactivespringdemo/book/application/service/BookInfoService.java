@@ -25,7 +25,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
         return bookInfoCRUDPort.loadBookInfoByBookId(bookId)
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while loadBookInfoByBookId :" + throwable);
-                    return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 
@@ -34,7 +34,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
         return bookInfoCRUDPort.loadAllBookInfo()
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while loadBookInfoByBookId :" + throwable);
-                    return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 
@@ -43,7 +43,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
         return bookInfoCRUDPort.saveBookInfo(command)
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while saveBookInfo :" + throwable.getLocalizedMessage());
-                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 
@@ -52,7 +52,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
         return bookInfoCRUDPort.updateBookInfo(command,bookId)
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while updateBookInfo :" + throwable);
-                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 
@@ -61,7 +61,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
         return bookInfoCRUDPort.deleteBookInfoByBookId(bookId)
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while deleteBookInfoByBookId :" + throwable);
-                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 }

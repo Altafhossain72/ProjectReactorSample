@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,10 +32,11 @@ public class ReviewController {
     public Flux<Review> getAllReviewByBookId(
             @PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
         return this.reviewCRUDUseCase.loadReviewByBookId(bookId)
+                .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while loadReviewByBookId :" + throwable);
-                            return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
+                            return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
                         }
                 );
     }
@@ -46,7 +48,7 @@ public class ReviewController {
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while saveReview :" + throwable);
-                            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage(), throwable.getCause());
                         }
                 );
     }
@@ -57,10 +59,11 @@ public class ReviewController {
             @RequestBody Mono<SaveReviewCommand> command) {
         return this.reviewCRUDUseCase.updateReview(command, reviewId)
                 .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR)))
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while updateReview :" + throwable);
-                            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage(), throwable.getCause());
                         }
                 );
     }
@@ -72,7 +75,7 @@ public class ReviewController {
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while deleteAllReviewForSingleBook :" + throwable);
-                            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage(), throwable.getCause());
                         }
                 );
     }
@@ -84,7 +87,7 @@ public class ReviewController {
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while deleteSingleReviewForSingleBook :" + throwable);
-                            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage(), throwable.getCause());
                         }
                 );
     }

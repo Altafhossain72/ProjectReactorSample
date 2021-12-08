@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Review {
-    private Long reviewId;
-    private Long bookId;
-    private String comment;
+public class Book {
+    BookInfo bookInfo;
+    List<Review> review;
 }

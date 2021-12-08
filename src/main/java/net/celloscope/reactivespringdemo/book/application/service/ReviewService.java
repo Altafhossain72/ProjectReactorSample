@@ -23,6 +23,7 @@ public class ReviewService implements ReviewCRUDUseCase {
     @Override
     public Flux<Review> loadReviewByBookId(Long bookId) {
         return reviewCRUDPort.loadAllReviewByBookId(bookId)
+
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while loadReviewByBookId :" + throwable);
                     return new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND);
@@ -32,9 +33,10 @@ public class ReviewService implements ReviewCRUDUseCase {
     @Override
     public Mono<Review> saveReview(Mono<SaveReviewCommand> command) {
        return reviewCRUDPort.saveReview(command)
+
                .onErrorMap(throwable -> {
                    log.error("Exception Occurred while saveReview:" + throwable);
-                   return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                   return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                }).log();
     }
 
@@ -43,7 +45,7 @@ public class ReviewService implements ReviewCRUDUseCase {
         return reviewCRUDPort.updateReview(command,reviewId)
                 .onErrorMap(throwable -> {
             log.error("Exception Occurred while updateReview :" + throwable);
-            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+            return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
         }).log();
     }
 
@@ -52,7 +54,7 @@ public class ReviewService implements ReviewCRUDUseCase {
          return reviewCRUDPort.deleteReviewByBookId(bookId)
                     .onErrorMap(throwable -> {
                         log.error("Exception Occurred while deleteReviewByBookId :" + throwable);
-                        return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                        return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                     }).log();
     }
 
@@ -61,7 +63,7 @@ public class ReviewService implements ReviewCRUDUseCase {
         return reviewCRUDPort.deleteReviewByReviewId(reviewId)
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while deleteReviewByReviewId :" + throwable);
-                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERORR);
+                    return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
                 }).log();
     }
 }
