@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface ReviewRepository extends ReactiveCrudRepository<ReviewDBEntity,Long> {
-    Flux<Review> findByBookId(Long bookId);
-    Mono<Review> findByReviewId(Long reviewId);
+    Flux<ReviewDBEntity> findByBookId(Long bookId);
+    Mono<ReviewDBEntity> findByReviewId(Long reviewId);
     Mono<Void> deleteByBookId(Long bookId);
 }
