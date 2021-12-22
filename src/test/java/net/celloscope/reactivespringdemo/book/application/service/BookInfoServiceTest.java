@@ -141,14 +141,14 @@ class BookInfoServiceTest {
     }
 
     private Mono<BookInfo> buildMockMonoBookInfo() {
-        return   Mono.just(BookInfo.builder()
+        return   Mono.justOrEmpty(BookInfo.builder()
                 .bookId(5l)
                 .author("altaf")
                 .title("my book")
                 .ISBN("4734hdu").build());
     }
     private Mono<SaveBookInfoCommand> buildMockMonoSaveBookInfoCommand() {
-        return   Mono.just(SaveBookInfoCommand.builder()
+        return   Mono.justOrEmpty(SaveBookInfoCommand.builder()
                 .bookId(5l)
                 .author("altaf")
                 .title("my book")

@@ -77,7 +77,7 @@ class BookServiceTest {
     }
 
     private Mono<BookInfo> buildMockMonoBookInfo() {
-        return Mono.just(BookInfo.builder()
+        return Mono.justOrEmpty(BookInfo.builder()
                 .bookId(5l)
                 .author("altaf")
                 .title("my book")

@@ -19,6 +19,7 @@ public class BookInfoPersistenceAdapter implements BookInfoCRUDPort {
 
     ModelMapper modelMapper = new ModelMapper();
 
+
     @Override
     public Mono<BookInfo> loadBookInfoByBookId(Long bookId) {
       return bookInfoRepository.findByBookId(bookId)
@@ -30,6 +31,8 @@ public class BookInfoPersistenceAdapter implements BookInfoCRUDPort {
        return bookInfoRepository.findAll()
                .map(bookInfoDBEntity -> modelMapper.map(bookInfoDBEntity,BookInfo.class));
     }
+
+
 
     @Override
     public Mono<BookInfo> saveBookInfo(Mono<SaveBookInfoCommand> command) {

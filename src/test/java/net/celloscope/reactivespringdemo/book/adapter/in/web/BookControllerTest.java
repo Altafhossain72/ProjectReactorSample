@@ -136,7 +136,7 @@ class BookControllerTest {
     }
 
     private Mono<SaveBookInfoCommand> buildMonoOfSaveBookInfoCommand() {
-        return Mono.just(SaveBookInfoCommand.builder()
+        return Mono.justOrEmpty(SaveBookInfoCommand.builder()
                 .author("altaf")
                 .isbn("47dh")
                 .title("the History")

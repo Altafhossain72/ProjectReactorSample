@@ -107,7 +107,7 @@ class ReviewServiceTest {
     }
 
     private Mono<SaveReviewCommand> buildMockMonoSaveReviewCommand() {
-        return Mono.just(SaveReviewCommand.builder()
+        return Mono.justOrEmpty(SaveReviewCommand.builder()
                 .reviewId(3l)
                 .bookId(1l)
                 .comment("nice")
