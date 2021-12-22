@@ -34,7 +34,6 @@ public class BookController {
 
     @GetMapping("/all-book")
     public Flux<BookInfo> getAllBook() {
-        bookInfoCRUDUseCase.loadAllBook().log();
         return bookInfoCRUDUseCase.loadAllBook()
                 .log()
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
