@@ -10,6 +10,7 @@ import net.celloscope.reactivespringdemo.book.domain.BookInfo;
 import net.celloscope.reactivespringdemo.common.ExceptionHandlerUtil;
 import net.celloscope.reactivespringdemo.common.Messages;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.time.Duration;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,9 +34,10 @@ public class BookController {
 
 
 
-    @GetMapping("/all-book")
+    @GetMapping(value = "/all-book",produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<BookInfo> getAllBook() {
         return bookInfoCRUDUseCase.loadAllBook()
+                .delayElements(Duration.ofSeconds(2))
                 .log()
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(
