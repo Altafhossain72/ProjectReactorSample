@@ -34,10 +34,10 @@ public class BookController {
 
 
 
-    @GetMapping(value = "/all-book",produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    @GetMapping(value = "/all-book",produces = MediaType.APPLICATION_NDJSON_VALUE)
     public Flux<BookInfo> getAllBook() {
         return bookInfoCRUDUseCase.loadAllBook()
-                .delayElements(Duration.ofSeconds(2))
+           .delayElements(Duration.ofSeconds(2))
                 .log()
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(

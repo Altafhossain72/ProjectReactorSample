@@ -35,7 +35,7 @@ public class BookInfoService implements BookInfoCRUDUseCase {
                 .onErrorMap(throwable -> {
                     log.error("Exception Occurred while loadBookInfoByBookId :" + throwable);
                     return new ExceptionHandlerUtil(HttpStatus.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-                }).log();
+                });
     }
 
     @Override
