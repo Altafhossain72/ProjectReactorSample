@@ -13,7 +13,7 @@ public class BookEndPointConfiguration {
 
     @Bean
     RouterFunction<ServerResponse> routes(BookHandler handler){
-        return route(GET("/v1/all-book"),request -> handler.getAllBook())
-                .andRoute(GET("/v1/book/{bookId}"),request -> handler.getBookById(bookId));
+        return route(GET("/v1/all-book"),handler::getAllBook);
+           //     .andRoute(GET("/v1/book/{bookId}"),request -> handler.getBookById(bookId));
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -33,7 +34,7 @@ public class BookHandler {
     private final BookInfoCRUDUseCase bookInfoCRUDUseCase;
     private final LoadBookWithReviewsUseCase loadBookWithReviewsUseCase;
 
-    public Mono<ServerResponse> getAllBook() {
+    public Mono<ServerResponse> getAllBook(ServerRequest serverRequest) {
         return defaultReadResponse(
                 bookInfoCRUDUseCase.loadAllBook()
                 .delayElements(Duration.ofSeconds(2))
