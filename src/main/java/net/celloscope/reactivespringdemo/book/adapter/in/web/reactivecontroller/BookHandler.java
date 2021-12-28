@@ -56,8 +56,8 @@ public class BookHandler {
     }
 
 
-    public Mono<ServerResponse> getBookById(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
-        return defaultReadResponse(bookInfoCRUDUseCase.loadBookInfoById(bookId)
+    public Mono<ServerResponse> getBookById(ServerRequest serverRequest) {
+        return defaultReadResponse(bookInfoCRUDUseCase.loadBookInfoById(Long.valueOf(serverRequest.pathVariable("id")))
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(
                         throwable -> {
@@ -67,8 +67,8 @@ public class BookHandler {
                 ));
     }
 
-    public Mono<ResponseEntity<BookInfo>> createBook(@RequestBody Mono<SaveBookInfoCommand> command) {
-        return bookInfoCRUDUseCase.saveBookInfo(command)
+    public Mono<ResponseEntity<BookInfo>> createBook(ServerRequest serverRequest) {
+        return bookInfoCRUDUseCase.saveBookInfo(serverRequest.bodyToMono(SaveBookInfoCommand.class))
                 .map(ResponseEntity::ok)
                 .onErrorMap(
                         throwable -> {
@@ -124,6 +124,11 @@ public class BookHandler {
                             return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
                         }
                 );
+    }
+
+
+    private static String getPathVarible(ServerRequest r) {
+        return r.pathVariable("id");
     }
 
 }
