@@ -52,16 +52,16 @@ public class BookHandler {
     public Mono<ServerResponse> getBookById(ServerRequest serverRequest) {
         return bookInfoResponse(
                 bookInfoCRUDUseCase.loadBookInfoById(
-                        Long.valueOf(serverRequest.pathVariable("bookId"))))
-                .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
-                .log()
-                .onErrorMap(
-                        throwable -> {
-                            log.error("Exception Occurred while loadBookInfoByBookId :" + throwable.getLocalizedMessage());
-                            return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
-                        }
-                );
+                        Long.valueOf(serverRequest.pathVariable("bookId")))
+        );
     }
+
+
+//    onErrorResume(
+//            throwable -> {
+//        log.error("Exception Occurred while loadBookInfoByBookId :" + throwable.getLocalizedMessage());
+//        return errorResponse(throwable.getMessage(),HttpStatus.NOT_FOUND) ;
+//    }
 
     public Mono<ServerResponse> createBook(ServerRequest serverRequest) {
         return bookInfoResponse(bookInfoCRUDUseCase.saveBookInfo(serverRequest.bodyToMono(SaveBookInfoCommand.class)))
@@ -124,7 +124,18 @@ public class BookHandler {
         return ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_STREAM_JSON)
-                .body(books, BookInfo.class);
+                .body(books, BookInfo.class)
+                .switchIfEmpty(
+                        ServerResponse.notFound()
+                                .build()
+                );
+    }
+
+    private static Mono<ServerResponse> errorResponse(String msg, HttpStatus httpStatus) {
+        return ServerResponse
+                .status(httpStatus)
+                .body(new ExceptionHandlerUtil(httpStatus,
+                        msg),ExceptionHandlerUtil.class);
     }
 
     private static Mono<ServerResponse> bookResponse(Publisher<Book> book) {
