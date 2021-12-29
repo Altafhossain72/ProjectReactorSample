@@ -1,4 +1,4 @@
-package net.celloscope.reactivespringdemo.book.adapter.in.web;
+package net.celloscope.reactivespringdemo.book.adapter.in.web.restController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

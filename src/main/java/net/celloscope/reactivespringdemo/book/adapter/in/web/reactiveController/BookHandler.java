@@ -1,4 +1,4 @@
-package net.celloscope.reactivespringdemo.book.adapter.in.web.reactivecontroller;
+package net.celloscope.reactivespringdemo.book.adapter.in.web.reactiveController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,41 +34,37 @@ public class BookHandler {
     private final LoadBookWithReviewsUseCase loadBookWithReviewsUseCase;
 
     public Mono<ServerResponse> getAllBook(ServerRequest serverRequest) {
-        return defaultReadResponse(
+        return bookInfoResponse(
                 bookInfoCRUDUseCase.loadAllBook()
-                .delayElements(Duration.ofSeconds(2))
-                .log()
-                .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
-                .onErrorMap(
-                        throwable -> {
-                            log.error("Exception Occurred while loadAllBook :" + throwable.getLocalizedMessage());
-                            return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
-                        }
-                ));
-    }
-
-    private static Mono<ServerResponse> defaultReadResponse(Publisher<BookInfo> books) {
-        return ServerResponse
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(books, BookInfo.class);
+                        .delayElements(Duration.ofSeconds(2))
+                        .log()
+                        .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
+                        .onErrorMap(
+                                throwable -> {
+                                    log.error("Exception Occurred while loadAllBook :" + throwable.getLocalizedMessage());
+                                    return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
+                                }
+                        )
+        );
     }
 
 
     public Mono<ServerResponse> getBookById(ServerRequest serverRequest) {
-        return defaultReadResponse(bookInfoCRUDUseCase.loadBookInfoById(Long.valueOf(serverRequest.pathVariable("id")))
+        return bookInfoResponse(
+                bookInfoCRUDUseCase.loadBookInfoById(
+                        Long.valueOf(serverRequest.pathVariable("bookId"))))
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
+                .log()
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while loadBookInfoByBookId :" + throwable.getLocalizedMessage());
                             return new ResponseStatusException(HttpStatus.NOT_FOUND, throwable.getMessage(), throwable.getCause());
                         }
-                ));
+                );
     }
 
-    public Mono<ResponseEntity<BookInfo>> createBook(ServerRequest serverRequest) {
-        return bookInfoCRUDUseCase.saveBookInfo(serverRequest.bodyToMono(SaveBookInfoCommand.class))
-                .map(ResponseEntity::ok)
+    public Mono<ServerResponse> createBook(ServerRequest serverRequest) {
+        return bookInfoResponse(bookInfoCRUDUseCase.saveBookInfo(serverRequest.bodyToMono(SaveBookInfoCommand.class)))
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while saveBookInfo :" + throwable.getLocalizedMessage());
@@ -78,10 +73,10 @@ public class BookHandler {
                 );
     }
 
-    public Mono<ResponseEntity<BookInfo>> updateBook(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId,
-                                                     @RequestBody Mono<SaveBookInfoCommand> command) {
-        return this.bookInfoCRUDUseCase.updateBookInfo(command, bookId)
-                .map(ResponseEntity::ok)
+
+    public Mono<ServerResponse> updateBook(ServerRequest serverRequest) {
+        return bookInfoResponse(bookInfoCRUDUseCase.updateBookInfo(serverRequest.bodyToMono(SaveBookInfoCommand.class),
+                Long.valueOf(serverRequest.pathVariable("bookId"))))
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while updateBookInfo :" + throwable.getLocalizedMessage());
@@ -90,9 +85,9 @@ public class BookHandler {
                 );
     }
 
-    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
-        return this.bookInfoCRUDUseCase.deleteBookInfo(bookId)
-                .map(ResponseEntity::ok)
+    public Mono<ServerResponse> deleteBook(ServerRequest serverRequest) {
+        return defaultVoidResponse(bookInfoCRUDUseCase.deleteBookInfo(
+                Long.valueOf(serverRequest.pathVariable("bookId"))))
                 .onErrorMap(
                         throwable -> {
                             log.error("Exception Occurred while deleteBookInfo :" + throwable.getLocalizedMessage());
@@ -102,10 +97,8 @@ public class BookHandler {
     }
 
 
-
-    public Mono<ResponseEntity<Book>> getBookWithReviews(@PathVariable("bookId") @NotBlank(message = "bookId  can not be null") @NotEmpty(message = "bookId  can not be empty") Long bookId) {
-        return this.loadBookWithReviewsUseCase.loadBookWithReviewsByBookId(bookId)
-                .map(ResponseEntity::ok)
+    public Mono<ServerResponse> getBookWithReviews(ServerRequest serverRequest) {
+        return bookResponse(loadBookWithReviewsUseCase.loadBookWithReviewsByBookId(Long.valueOf(serverRequest.pathVariable("bookId"))))
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(
                         throwable -> {
@@ -115,8 +108,8 @@ public class BookHandler {
                 );
     }
 
-    public Flux<Book> getAllBookWithReviews() {
-        return this.loadBookWithReviewsUseCase.loadAllBooksWithAllReviews()
+    public Mono<ServerResponse> getAllBookWithReviews(ServerRequest serverRequest) {
+        return bookResponse(loadBookWithReviewsUseCase.loadAllBooksWithAllReviews())
                 .switchIfEmpty(Mono.error(new ExceptionHandlerUtil(HttpStatus.NOT_FOUND, Messages.NOT_FOUND)))
                 .onErrorMap(
                         throwable -> {
@@ -127,8 +120,21 @@ public class BookHandler {
     }
 
 
-    private static String getPathVarible(ServerRequest r) {
-        return r.pathVariable("id");
+    private static Mono<ServerResponse> bookInfoResponse(Publisher<BookInfo> books) {
+        return ServerResponse
+                .ok()
+                .contentType(MediaType.APPLICATION_STREAM_JSON)
+                .body(books, BookInfo.class);
     }
 
+    private static Mono<ServerResponse> bookResponse(Publisher<Book> book) {
+        return ServerResponse
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(book, Book.class);
+    }
+
+    private static Mono<ServerResponse> defaultVoidResponse(Mono<Void> id) {
+        return ServerResponse.ok().build();
+    }
 }
